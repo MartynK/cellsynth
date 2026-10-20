@@ -28,7 +28,11 @@
 #'   written when it does not.
 #' @param spec_dir Folder for per-sheet specs (`<stem>__<position>_<sheet>_spec.csv`);
 #'   default `out_dir`.
-#' @param id,text Columns forced to `id`/`text` when a spec is inferred.
+#' @param id,text Column names forced to `id` / `text` (case-insensitive).
+#'   They apply to inferred specs and also on top of reviewed specs read
+#'   from disk, so identifiers named here always stay untouched.
+#' @param id_pattern,text_pattern Regular expressions on column names, same
+#'   effect (see [apply_role_overrides()]).
 #' @param m Number of synthetic copies.
 #' @param seed Base seed; copy `i`, sheet `k` of `K` uses `seed + K * (i - 1) + k - 1`.
 #' @param small_sheets Policy for sheets too small to synthesise.
@@ -37,9 +41,20 @@
 #' @param ... Passed to [synthesize_table()].
 #' @return list(results = list over copies of lists over sheets of
 #'   `synth_result`, files, spec_paths).
+#' @examples
+#' df <- data.frame(id = sprintf("AB%03d", 1:60), value = 1:60,
+#'                  code = rep(c(0, 1, NA), 20), group = rep(c("A", "B"), 30))
+#' path <- file.path(tempdir(), "synthesize_file.csv")
+#' utils::write.csv(df, path, row.names = FALSE, na = "")
+#' out <- synthesize_file(path, out_dir = file.path(tempdir(), "synth_output"),
+#'                        m = 1, seed = 1, n_folds = 2, verbose = FALSE)
+#' out$files
+#' out$spec_paths
+#' head(out$results[[1]][[1]]$synthetic)
 #' @export
 synthesize_file <- function(path, out_dir, sheet = NULL, spec_path = NULL,
-                            spec_dir = out_dir, id = NULL, text = NULL, m = 1,
+                            spec_dir = out_dir, id = NULL, text = NULL,
+                            id_pattern = NULL, text_pattern = NULL, m = 1,
                             seed = 1, small_sheets = c("blank", "copy", "drop"),
                             minbucket = 5, delim = NULL, encoding = NULL, ...) {
   small_sheets <- match.arg(small_sheets)
@@ -75,14 +90,26 @@ synthesize_file <- function(path, out_dir, sheet = NULL, spec_path = NULL,
     if (file.exists(spec_paths[k])) {
       message("Using reviewed spec: ", spec_paths[k])
       sp <- read_spec(spec_paths[k])
+      before <- sp$role
+      sp <- apply_role_overrides(sp, id = id, text = text, id_pattern = id_pattern,
+                                 text_pattern = text_pattern, warn_unknown = FALSE)
+      if (any(sp$role != before))
+        message("  overrides changed ", sum(sp$role != before), " role(s) of the reviewed spec")
     } else {
-      sp <- infer_spec(srcs[[k]], id = id, text = text)
+      sp <- infer_spec(srcs[[k]], id = id, text = text, id_pattern = id_pattern,
+                       text_pattern = text_pattern, warn_unknown = FALSE)
       write_spec(sp, spec_paths[k])
       message("Inferred spec written for review: ", spec_paths[k])
     }
     validate_spec(sp, srcs[[k]])
     sp
   })
+
+  # A named identifier that matches no sheet at all is almost surely a typo
+  all_cols <- tolower(unlist(lapply(srcs, function(x) c(names(x$raw), x$orig_names))))
+  miss <- c(id, text)[!tolower(c(id, text)) %in% all_cols]
+  if (length(miss)) warning("Override names match no column in any sheet: ",
+                            paste(miss, collapse = ", "))
 
   ext_out <- if (is_xl) "xlsx" else "csv"
   results <- vector("list", m)

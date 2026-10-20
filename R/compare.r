@@ -15,6 +15,16 @@
 #' @param spec The shared spec.
 #' @param rows Rows to compare (default: all).
 #' @return A data.frame, one row per modelled column.
+#' @examples
+#' df <- data.frame(id = sprintf("AB%03d", 1:60), value = 1:60,
+#'                  code = rep(c(0, 1, NA), 20), group = rep(c("A", "B"), 30))
+#' path <- file.path(tempdir(), "compare_tables.csv")
+#' utils::write.csv(df, path, row.names = FALSE, na = "")
+#' src <- read_source(path)
+#' spec <- infer_spec(src)
+#' syn <- src$raw
+#' syn$value <- rev(syn$value)
+#' compare_tables(src$raw, syn, spec)
 #' @export
 compare_tables <- function(orig, syn, spec, rows = seq_len(nrow(orig))) {
   cols <- which(spec$role %in% MODEL_ROLES)
@@ -66,6 +76,16 @@ compare_tables <- function(orig, syn, spec, rows = seq_len(nrow(orig))) {
 #'   share of rows identical AND unique in the original (the disclosive kind),
 #'   near = share of
 #'   rows matching at least `min_share` of their cells, per_row = vector).
+#' @examples
+#' df <- data.frame(id = sprintf("AB%03d", 1:60), value = 1:60,
+#'                  code = rep(c(0, 1, NA), 20))
+#' path <- file.path(tempdir(), "row_disclosure.csv")
+#' utils::write.csv(df, path, row.names = FALSE, na = "")
+#' src <- read_source(path)
+#' spec <- infer_spec(src)
+#' syn <- src$raw
+#' syn$value[1:30] <- rev(syn$value[1:30])
+#' row_disclosure(src$raw, syn, spec, min_share = 0.5)
 #' @export
 row_disclosure <- function(orig, syn, spec, rows = seq_len(nrow(orig)),
                            min_share = 0.9) {
@@ -90,6 +110,16 @@ row_disclosure <- function(orig, syn, spec, rows = seq_len(nrow(orig)),
 #'
 #' @inheritParams compare_tables
 #' @return list(mad = mean absolute difference, orig, syn matrices).
+#' @examples
+#' df <- data.frame(id = sprintf("AB%03d", 1:60), value = 1:60,
+#'                  code = rep(c(0, 1, NA), 20))
+#' path <- file.path(tempdir(), "compare_correlations.csv")
+#' utils::write.csv(df, path, row.names = FALSE, na = "")
+#' src <- read_source(path)
+#' spec <- infer_spec(src)
+#' syn <- src$raw
+#' syn$value <- rev(syn$value)
+#' compare_correlations(src$raw, syn, spec)
 #' @export
 compare_correlations <- function(orig, syn, spec) {
   # Column set and binary reference level are decided on the original only,

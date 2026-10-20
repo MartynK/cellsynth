@@ -2,6 +2,7 @@
 
 S3method(print,synth_result)
 S3method(print,synth_source)
+export(apply_role_overrides)
 export(compare_correlations)
 export(compare_tables)
 export(detect_nonsubject_rows)

@@ -1,28 +1,37 @@
-Package: SyntheticData
-Title: Synthetic Counterparts of Proprietary Tabular Databases
+Package: cellsynth
+Title: Cell-Wise Synthetic Copies of De-Identified Tables
 Version: 0.1.0
-Authors@R: 
+Authors@R:
     person("Marton", "Kiss", , "mrkmarton@gmail.com", role = c("aut", "cre"))
-Description: Turns de-identified clinical tables (Excel/CSV) into
-    synthetic counterparts by rolling censor-and-impute: every
-    non-identifier cell, missingness included, is censored once and
-    re-drawn from a CART donor model fitted on the rest of the table.
-    Identifiers are kept so tables stay joinable.
+Description: Turns de-identified tables ('Excel' workbooks or delimited
+    text files) into synthetic counterparts with the same layout, the same
+    identifiers and the same data-entry quirks. Every non-identifier cell,
+    missingness included, is censored once per sweep and redrawn by copying
+    the raw value of a donor drawn from a classification and regression
+    tree leaf fitted on the rest of the table, in the spirit of the
+    sequential tree-based synthesis of Reiter (2005) "Using CART to
+    generate partially synthetic public use microdata", Journal of Official
+    Statistics 21(3):441-462, and Nowok, Raab and Dibben (2016)
+    <doi:10.18637/jss.v074.i11>. Identifiers are kept so that tables stay
+    joinable, and columns of other tables can condition the synthesis so
+    cross-table associations survive a later join. Synthetic copies are
+    intended for developing and testing analysis code; they are not an
+    anonymisation method.
 License: MIT + file LICENSE
-Config/roxygen2/version: 8.1.1
+URL: https://github.com/MartynK/SyntheticData
+BugReports: https://github.com/MartynK/SyntheticData/issues
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
-Suggests: 
-    dplyr,
-    ggplot2,
-    here,
-    MASS,
-    testthat (>= 3.0.0)
-Config/testthat/edition: 3
-Imports: 
+Config/roxygen2/version: 8.1.1
+Imports:
     openxlsx,
     readr,
     readxl,
     rpart,
     stats,
-    utils
+    tools,
+    utils,
+    withr
+Suggests:
+    testthat (>= 3.0.0)
+Config/testthat/edition: 3

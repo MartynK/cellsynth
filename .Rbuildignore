@@ -1,11 +1,13 @@
-^SyntheticData\.Rproj$
-^\.Rproj\.user$
-^LICENSE\.md$
 ^1_input_databases$
 ^2_synthetic$
 ^AGENTS\.md$
 ^JOURNAL\.md$
+^LICENSE\.md$
+^SyntheticData\.Rproj$
+^\.Rproj\.user$
 ^\.claude$
-^inst/sideffects$
 ^\.positai$
+^cran-comments\.md$
+^inst/functions$
+^inst/sideffects$
 ^private$

@@ -22,6 +22,13 @@
 #'   unique names), `orig_names` (header as on disk, duplicates allowed),
 #'   `orig_class` (readxl/readr guessed class per column), `path`, `sheet`,
 #'   `format`, and for CSV `delim` and `encoding`.
+#' @examples
+#' df <- data.frame(id = sprintf("AB%03d", 1:60), value = 1:60,
+#'                  code = rep(c(0, 1, NA), 20))
+#' path <- file.path(tempdir(), "read_source.csv")
+#' utils::write.csv(df, path, row.names = FALSE, na = "")
+#' src <- read_source(path)
+#' head(src$raw)
 #' @export
 read_source <- function(path, sheet = NULL, guess_max = 1e5, delim = NULL,
                         encoding = NULL) {
@@ -73,6 +80,12 @@ read_source <- function(path, sheet = NULL, guess_max = 1e5, delim = NULL,
 #' Sheet names of an Excel workbook
 #' @param path Path to an Excel file.
 #' @return Character vector, in workbook order.
+#' @examples
+#' df <- data.frame(id = sprintf("AB%03d", 1:6), value = 1:6)
+#' path <- file.path(tempdir(), "source_sheets.xlsx")
+#' sheets <- list(Subjects = df, Codes = data.frame(code = c(0, 1)))
+#' openxlsx::write.xlsx(sheets, path, overwrite = TRUE)
+#' source_sheets(path)
 #' @export
 source_sheets <- function(path) readxl::excel_sheets(path)
 
@@ -96,7 +109,7 @@ detect_encoding <- function(path) {
   if (is.na(enc) || enc %in% c("ASCII", "UTF-8")) enc <- "windows-1250"
   # readr reports ISO-8859-2 for Hungarian text. Hungarian letters sit at the
   # same bytes in both; where they differ, windows-1250 is what Excel writes
-  # (0xB1 is "±" there, "a-ogonek" in ISO-8859-2; also „ ” – in 0x80-0x9F)
+  # (0xB1 is plus-minus there, a-ogonek in ISO-8859-2; also typographic quotes and dashes in 0x80-0x9F)
   if (enc == "ISO-8859-2") enc <- "windows-1250"
   enc
 }
@@ -119,6 +132,10 @@ detect_delim <- function(path, encoding = "UTF-8") {
   if (all(cnt == 0)) "," else cand[which.max(cnt)]
 }
 
+#' Print a synth_source
+#' @param x A `synth_source`.
+#' @param ... Ignored.
+#' @return `x`, invisibly.
 #' @export
 print.synth_source <- function(x, ...) {
   cat("<synth_source>", basename(x$path),

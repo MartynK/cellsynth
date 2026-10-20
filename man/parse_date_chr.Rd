@@ -17,5 +17,12 @@ Numeric vector of days since 1970-01-01, \code{NA} if not a date.
 \description{
 Recognises ISO \code{yyyy-mm-dd} (with optional time), \code{yyyy.mm.dd.},
 \code{yyyy/mm/dd}, \code{dd.mm.yyyy} and, when \code{allow_serial = TRUE}, Excel date
-serials (numbers between 20000 and 60000, i.e. 1954 to 2064).
+serials (numbers between 3000 and 73000, i.e. 1908 to 2099).
+}
+\examples{
+x <- c("2020-01-15", "16.01.2020", "2020/01/17", "43848", NA)
+days <- parse_date_chr(x)
+as.Date(days, origin = "1970-01-01")
+days <- parse_date_chr(x, allow_serial = TRUE)
+as.Date(days, origin = "1970-01-01")
 }

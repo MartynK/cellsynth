@@ -1,4 +1,4 @@
-# JOURNAL: SyntheticData (public)
+# JOURNAL: cellsynth (public; repo SyntheticData)
 
 Design decisions and rollbacks of the package. The client-specific journal
 (data, validation numbers) is kept outside the repository.
@@ -68,6 +68,39 @@ predictors (`aux_always = TRUE`).
 - Writer fixes found by a stress run on 13 real files: openxlsx writes "\n"
   as "\r\n" (Excel's "\r\n" is collapsed first) and shifts Date serials below
   61 by a day (such columns are written as POSIXct).
+
+## 2026-10-20: identifier detection, CRAN check
+
+- D12. Identifier heuristics missed CDISC/EDC keys: `USUBJID`
+  (`STUDY01-01-001`) came out `text` (permuted, joins broken), `SUBJID`
+  (`001`) and `PTNO` `numeric`, `SITEID` `categorical`. Now: trial/EDC key
+  names (`USUBJID`, `SUBJID`, `SITEID`, `SITE`, `STUDYID`, `PTNO`, `INVID`,
+  `RANDNO`, `SCRNUM`, ...) are `id` whether unique or not; multi-segment codes
+  (not dates) and zero-padded fixed-width integers are `id` when
+  near-unique. Tests in `test-ids.R`.
+- `R CMD check --as-cran` (Windows, R 4.6.0, no manual): 0 errors, 0
+  warnings, 0 notes after escaping non-ASCII characters in two regexes. A
+  first run showed false test failures: a stale installed copy in the user
+  library (first on `.libPaths()`) shadowed the freshly built one.
+- Not yet CRAN-ready at that point: name clash with the existing
+  `syntheticdata`, no examples, slow tests, no references.
+
+## 2026-10-20: CRAN preparation, user-named identifiers
+
+- Renamed the package `cellsynth` (repository name unchanged).
+- D13. `id`, `text`, `id_pattern`, `text_pattern` (names case-insensitive,
+  patterns on column names) and session options `cellsynth.id` etc.;
+  `apply_role_overrides()`. In `synthesize_file()` they also apply on top of
+  a reviewed spec read from disk, so named identifiers always stay
+  untouched; a name that matches no column in any sheet warns.
+- Seeded runs no longer change the caller's random stream
+  (`withr::local_seed`).
+- Examples for every exported function (written by an external model on a
+  code-only copy, merged as a roxygen-only patch); references in
+  DESCRIPTION; NEWS.md, cran-comments.md; slow tests `skip_on_cran()`.
+- `R CMD check --as-cran` with incoming checks: 0 errors, 0 warnings, 1 note
+  (new submission; GitHub URLs 404 while the repository is private). PDF
+  manual builds. CRAN-mode tests about 70 s.
 
 ## Open problems / TODO
 

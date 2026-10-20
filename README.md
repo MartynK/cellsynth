@@ -1,4 +1,4 @@
-# SyntheticData
+# cellsynth
 
 Turns a de-identified table (xlsx workbook or csv) into a synthetic
 counterpart with the same layout, the same identifiers and the same data
@@ -10,7 +10,7 @@ machine.
 
 ```r
 # install.packages("remotes"); remotes::install_github("MartynK/SyntheticData")
-library(SyntheticData)
+library(cellsynth)
 
 synthesize_file("path/to/table.xlsx", out_dir = "synthetic", m = 1)
 ```
@@ -22,6 +22,19 @@ role (`id`, `numeric`, `date`, `categorical`, `text`, `constant`, `empty`)
 and why the heuristics chose it. Fix any role they got wrong (an identifier
 they missed, free text taken for a category) and run again with the same
 `spec_dir`; reviewed specs are reused.
+
+Identifiers are detected by name (`USUBJID`, `SUBJID`, `SITEID`, patient
+or serial numbers, ...) and by value pattern (`AB123`, `STUDY01-01-001`,
+zero-padded `0042`). Name your own when the heuristics cannot know them;
+named identifiers win over a reviewed spec too:
+
+```r
+synthesize_file(path, out_dir = "synthetic",
+                id = c("PatKey", "VisitNo"),        # exact names, any case
+                id_pattern = "^(pat|subj).*key$",   # regular expressions
+                text = "Comment")                   # free text, permuted
+options(cellsynth.id = c("PatKey", "VisitNo"))      # or once per session
+```
 
 A toy run:
 

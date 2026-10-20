@@ -97,7 +97,7 @@ test_that("xlsx round trip keeps header and restores numeric / date types", {
 })
 
 test_that("restore_type handles numeric, logical, date and fall-through", {
-  rt <- SyntheticData:::restore_type
+  rt <- cellsynth:::restore_type
   expect_equal(rt(c("1,5", "2", NA), "numeric"), c(1.5, 2, NA))
   expect_equal(rt(c("1", "x"), "numeric"), c("1", "x"))      # not all numeric: left as text
   expect_equal(rt(c("TRUE", "false", NA), "logical"), c(TRUE, FALSE, NA))

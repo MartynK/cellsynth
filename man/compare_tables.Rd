@@ -25,3 +25,14 @@ same row's original cell; for categorical columns \code{chance_match} gives
 what a random redraw from the marginal would produce, so a large excess
 points at a column that copies its own row.
 }
+\examples{
+df <- data.frame(id = sprintf("AB\%03d", 1:60), value = 1:60,
+                 code = rep(c(0, 1, NA), 20), group = rep(c("A", "B"), 30))
+path <- file.path(tempdir(), "compare_tables.csv")
+utils::write.csv(df, path, row.names = FALSE, na = "")
+src <- read_source(path)
+spec <- infer_spec(src)
+syn <- src$raw
+syn$value <- rev(syn$value)
+compare_tables(src$raw, syn, spec)
+}

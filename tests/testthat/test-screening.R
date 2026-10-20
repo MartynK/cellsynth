@@ -1,8 +1,8 @@
 # Block-wise predictor screening, lock pairs and lock groups, and a wide-sheet
 # smoke test of the whole engine.
 
-screen <- SyntheticData:::screen_predictors
-lock_groups <- SyntheticData:::lock_groups
+screen <- cellsynth:::screen_predictors
+lock_groups <- cellsynth:::lock_groups
 
 # Modelled part of the toy table (subject rows only) with roles
 toy_screen_input <- function() {
@@ -108,6 +108,7 @@ test_that("lock_groups builds connected components", {
 })
 
 test_that("blocking does not change the result (wide sparse table)", {
+  skip_on_cran()  # ~7 s
   raw <- sparse_binary_table(60, 800)
   # a planted coupled pair, columns 5 and 7
   raw[[7]] <- raw[[5]]
@@ -130,6 +131,7 @@ test_that("blocking does not change the result (wide sparse table)", {
 })
 
 test_that("a 3,000-column sparse sheet screens in small blocks", {
+  skip_on_cran()  # ~25 s
   raw <- sparse_binary_table(60, 3000, seed = 9)
   raw[[2500]] <- raw[[11]]
   roles <- rep("categorical", ncol(raw))
@@ -158,6 +160,7 @@ test_that("screening accepts a subset of targets with auxiliary-like extra colum
 # ---- the whole engine on a wide sheet ----------------------------------------
 
 test_that("a 40 x 1,500 sparse mixed sheet synthesises in reasonable time", {
+  skip_on_cran()  # ~2 min
   skip_if(nzchar(Sys.getenv("SYNTH_SKIP_SLOW")), "SYNTH_SKIP_SLOW set")
   set.seed(41)
   n <- 40

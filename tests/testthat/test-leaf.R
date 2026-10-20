@@ -1,4 +1,4 @@
-leaf_donors <- SyntheticData:::leaf_donors
+leaf_donors <- cellsynth:::leaf_donors
 
 make_xy <- function(n = 100, seed = 1) {
   set.seed(seed)

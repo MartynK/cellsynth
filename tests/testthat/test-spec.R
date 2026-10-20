@@ -47,17 +47,17 @@ test_that("validate_spec errors on mismatched columns and bad roles", {
   src <- toy_source()
   spec <- infer_spec(src)
   bad <- spec[-1, ]
-  expect_error(SyntheticData:::validate_spec(bad, src), "do not match")
+  expect_error(cellsynth:::validate_spec(bad, src), "do not match")
   bad2 <- spec
   bad2$column[2] <- "other"
-  expect_error(SyntheticData:::validate_spec(bad2, src), "do not match")
+  expect_error(cellsynth:::validate_spec(bad2, src), "do not match")
   bad3 <- spec
   bad3$role[2] <- "banana"
-  expect_error(SyntheticData:::validate_spec(bad3, src), "Unknown roles")
+  expect_error(cellsynth:::validate_spec(bad3, src), "Unknown roles")
   no_id <- spec
   no_id$role[no_id$role == "id"] <- "text"
-  expect_warning(SyntheticData:::validate_spec(no_id, src), "No identifier")
-  expect_invisible(SyntheticData:::validate_spec(spec, src))
+  expect_warning(cellsynth:::validate_spec(no_id, src), "No identifier")
+  expect_invisible(cellsynth:::validate_spec(spec, src))
 })
 
 test_that("write_spec / read_spec round trip", {

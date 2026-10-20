@@ -24,3 +24,14 @@ rows matching at least \code{min_share} of their cells, per_row = vector).
 \description{
 Compares the modelled columns only (identifiers are equal by design).
 }
+\examples{
+df <- data.frame(id = sprintf("AB\%03d", 1:60), value = 1:60,
+                 code = rep(c(0, 1, NA), 20))
+path <- file.path(tempdir(), "row_disclosure.csv")
+utils::write.csv(df, path, row.names = FALSE, na = "")
+src <- read_source(path)
+spec <- infer_spec(src)
+syn <- src$raw
+syn$value[1:30] <- rev(syn$value[1:30])
+row_disclosure(src$raw, syn, spec, min_share = 0.5)
+}

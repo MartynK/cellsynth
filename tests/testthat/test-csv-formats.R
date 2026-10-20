@@ -128,7 +128,7 @@ test_that("comma and semicolon plain files are detected", {
   # an empty file defaults to comma without erroring in detection
   h <- tempfile(fileext = ".csv")
   writeLines(character(), h)
-  expect_equal(SyntheticData:::detect_delim(h), ",")
+  expect_equal(cellsynth:::detect_delim(h), ",")
 })
 
 test_that("delimiters inside double-quoted fields are not counted", {

@@ -16,6 +16,15 @@ Logical vector, \code{TRUE} for non-subject rows.
 }
 \description{
 A row is non-subject when any identifier cell reads like a summary label
-(\code{TOTAL}, \code{Sum}, \code{Összesen}), or when the main identifier carries no digit
+(\code{TOTAL}, \code{Sum}, \code{Osszesen} with or without accent), or when the main identifier carries no digit
 while at least 90\% of the others do (site-name header rows).
+}
+\examples{
+df <- data.frame(id = c(sprintf("AB\%03d", 1:59), "TOTAL"), value = 1:60)
+path <- file.path(tempdir(), "nonsubject_rows.csv")
+utils::write.csv(df, path, row.names = FALSE, na = "")
+src <- read_source(path)
+spec <- infer_spec(src, id = "id")
+flagged <- detect_nonsubject_rows(src$raw, spec)
+src$raw[flagged, , drop = FALSE]
 }

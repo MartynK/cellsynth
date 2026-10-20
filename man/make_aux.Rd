@@ -37,3 +37,17 @@ list(raw, roles), rows aligned to \code{src$raw} (first match per key).
 Auxiliary columns condition the synthesis (so cross-table associations
 survive a later join) but are never censored or written out.
 }
+\examples{
+df <- data.frame(id = sprintf("AB\%03d", 1:60), value = 1:60)
+other <- data.frame(id = rev(df$id), code = rep(c(0, 1, NA), 20))
+path <- file.path(tempdir(), "make_aux_main.csv")
+aux_path <- file.path(tempdir(), "make_aux_other.csv")
+utils::write.csv(df, path, row.names = FALSE, na = "")
+utils::write.csv(other, aux_path, row.names = FALSE, na = "")
+src <- read_source(path)
+aux_src <- read_source(aux_path)
+aux_spec <- infer_spec(aux_src)
+aux <- make_aux(src, by = "id", aux_src = aux_src,
+                aux_spec = aux_spec, aux_by = "id", cols = "code")
+head(aux$raw)
+}

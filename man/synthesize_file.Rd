@@ -12,6 +12,8 @@ synthesize_file(
   spec_dir = out_dir,
   id = NULL,
   text = NULL,
+  id_pattern = NULL,
+  text_pattern = NULL,
   m = 1,
   seed = 1,
   small_sheets = c("blank", "copy", "drop"),
@@ -35,7 +37,12 @@ written when it does not.}
 \item{spec_dir}{Folder for per-sheet specs (\verb{<stem>__<position>_<sheet>_spec.csv});
 default \code{out_dir}.}
 
-\item{id, text}{Columns forced to \code{id}/\code{text} when a spec is inferred.}
+\item{id, text}{Column names forced to \code{id} / \code{text} (case-insensitive).
+They apply to inferred specs and also on top of reviewed specs read
+from disk, so identifiers named here always stay untouched.}
+
+\item{id_pattern, text_pattern}{Regular expressions on column names, same
+effect (see \code{\link[=apply_role_overrides]{apply_role_overrides()}}).}
 
 \item{m}{Number of synthetic copies.}
 
@@ -72,4 +79,15 @@ rows (legends, codebooks, lookup tables, tiny pilots) get \code{small_sheets}:
 \code{"blank"} (default; keeps header and identifiers, empties the rest),
 \code{"copy"} (verbatim, for codebooks you know hold no subject data) or
 \code{"drop"}.
+}
+\examples{
+df <- data.frame(id = sprintf("AB\%03d", 1:60), value = 1:60,
+                 code = rep(c(0, 1, NA), 20), group = rep(c("A", "B"), 30))
+path <- file.path(tempdir(), "synthesize_file.csv")
+utils::write.csv(df, path, row.names = FALSE, na = "")
+out <- synthesize_file(path, out_dir = file.path(tempdir(), "synth_output"),
+                       m = 1, seed = 1, n_folds = 2, verbose = FALSE)
+out$files
+out$spec_paths
+head(out$results[[1]][[1]]$synthetic)
 }

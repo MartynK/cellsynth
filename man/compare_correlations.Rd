@@ -18,3 +18,14 @@ list(mad = mean absolute difference, orig, syn matrices).
 Over the numeric, date and binary categorical columns, Spearman
 correlations on pairwise complete rows.
 }
+\examples{
+df <- data.frame(id = sprintf("AB\%03d", 1:60), value = 1:60,
+                 code = rep(c(0, 1, NA), 20))
+path <- file.path(tempdir(), "compare_correlations.csv")
+utils::write.csv(df, path, row.names = FALSE, na = "")
+src <- read_source(path)
+spec <- infer_spec(src)
+syn <- src$raw
+syn$value <- rev(syn$value)
+compare_correlations(src$raw, syn, spec)
+}

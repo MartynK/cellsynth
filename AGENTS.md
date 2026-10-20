@@ -1,4 +1,4 @@
-# AGENTS.md: SyntheticData
+# AGENTS.md: cellsynth (repo: SyntheticData)
 
 Package that turns de-identified tables into synthetic counterparts (same
 layout, real identifiers, redrawn values). Package root = repo root. R only.
@@ -27,7 +27,7 @@ Updated 2026-10-20.
 | `R/compare.r` | `compare_tables()`, `row_disclosure()`, `compare_correlations()` |
 | `R/pipeline.r` | `synthesize_file()`: every sheet, per-sheet specs, small-sheet policy, m copies, run log |
 | `inst/functions/load_stuff.r` | template loader, sources `R/` |
-| `tests/testthat/` | 90 tests on toy data (helper-toy.R, helper-workbook.R); `SYNTH_SKIP_SLOW=1` skips the ~2 min wide-sheet test |
+| `tests/testthat/` | 97 tests on toy data (helper-toy.R, helper-workbook.R); `SYNTH_SKIP_SLOW=1` skips the ~2 min wide-sheet test |
 
 ## Engine in brief
 
@@ -58,5 +58,16 @@ Sheets go through `passthrough_result()` when empty / no modelled columns
 - Never edit a script while an Rscript process is running it: Rscript reads
   the file as a stream and parses the edited bytes after the current
   top-level expression.
+- `R CMD check` on the maintainer's machine: R's own system profile
+  (`R-4.6.0/library/base/R/Rprofile`, line ~226) hard-codes
+  `.libPaths(".../_Libraries")`, which replaces the library `R CMD check`
+  sets up for its child processes. A check therefore loads whatever is
+  installed in `_Libraries`, not the build. Procedure: `R CMD INSTALL .`
+  into `_Libraries` first, then check (the check then tests the same code).
+  If the install says "cannot remove earlier installation" (OneDrive
+  handles), rename the old folder aside, install, delete it. Pandoc for the
+  README/NEWS check: `RSTUDIO_PANDOC=".../RStudio/resources/app/bin/quarto/bin/tools"`.
+- CRAN mode: `skip_on_cran()` on the three wide-table tests; devtools
+  sets `NOT_CRAN=true`, so time CRAN mode with `NOT_CRAN=false` (~70 s).
 - Runtime guide: 900 x 100 about 1 min; 1,000 x 1,100 about 5-10 min;
   900 x 9,000 about 50-70 min, about 0.5 GB RAM.

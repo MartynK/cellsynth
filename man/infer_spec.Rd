@@ -9,33 +9,53 @@ infer_spec(
   id = NULL,
   text = NULL,
   roles = NULL,
+  id_pattern = NULL,
+  text_pattern = NULL,
   max_levels = 10,
-  max_cat_levels = 60
+  max_cat_levels = 60,
+  warn_unknown = TRUE
 )
 }
 \arguments{
 \item{src}{A \code{synth_source} from \code{\link[=read_source]{read_source()}}.}
 
-\item{id, text}{Character vectors of column names (internal or on-disk) to
-force to \code{id} or \code{text}.}
+\item{id, text}{Column names (internal or on-disk, case-insensitive) to
+force to \code{id} or \code{text}, whatever the heuristics say.}
 
 \item{roles}{Named character vector of further role overrides.}
+
+\item{id_pattern, text_pattern}{Regular expressions on column names, e.g.
+\code{id_pattern = "^(pat|subj).*(id|no)$"}. See \code{\link[=apply_role_overrides]{apply_role_overrides()}},
+also for session-wide defaults via \code{options()}.}
 
 \item{max_levels}{Numeric columns with at most this many distinct values
 are treated as categorical.}
 
 \item{max_cat_levels}{Character columns with at most this many labels (and
 at most 10\% of the observed rows) are categorical, otherwise text.}
+
+\item{warn_unknown}{Warn about override names that match no column.}
 }
 \value{
 A data.frame, one row per column: \code{column}, \code{orig_name}, \code{role},
 \code{n_obs}, \code{n_unique}, \code{miss_frac}, \code{num_frac}, \code{date_frac}, \code{reason}.
 }
 \description{
-Heuristics, in order: all-missing columns are \code{empty}; identifier-like
+Heuristics, in order: all-missing columns are \code{empty}; trial and EDC key
+names (\code{USUBJID}, \code{SUBJID}, \code{SITEID}, \code{STUDYID}, \code{RANDNO}, ...) are \code{id};
+identifier-like
 names with near-unique values (or code-like values such as \code{AB123}) are
 \code{id}; a single value with no missing cells is \code{constant}; mostly-date
 columns are \code{date}; mostly-numeric columns are \code{numeric}, or \code{categorical}
 if they take few distinct values (coded 0/1/2 fields); remaining character
 columns are \code{categorical} when the label set is small and \code{text} otherwise.
+}
+\examples{
+df <- data.frame(id = sprintf("AB\%03d", 1:60), value = 1:60,
+                 code = rep(c(0, 1, NA), 20), group = rep(c("A", "B"), 30))
+path <- file.path(tempdir(), "infer_spec.csv")
+utils::write.csv(df, path, row.names = FALSE, na = "")
+src <- read_source(path)
+spec <- infer_spec(src, id = "id", roles = c(code = "categorical"))
+spec[, c("column", "role", "reason")]
 }

@@ -15,3 +15,13 @@ A spec data.frame.
 \description{
 Read a spec CSV written by \code{\link[=write_spec]{write_spec()}}
 }
+\examples{
+df <- data.frame(id = sprintf("AB\%03d", 1:60), value = 1:60)
+path <- file.path(tempdir(), "read_spec_source.csv")
+utils::write.csv(df, path, row.names = FALSE, na = "")
+spec <- infer_spec(read_source(path))
+spec_path <- file.path(tempdir(), "read_spec.csv")
+write_spec(spec, spec_path)
+reviewed <- read_spec(spec_path)
+reviewed[, c("column", "role")]
+}

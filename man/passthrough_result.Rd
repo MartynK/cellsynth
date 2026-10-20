@@ -25,3 +25,12 @@ For sheets that are empty, have no modelled columns, or are too small to
 synthesise (fewer than \code{4 * minbucket} subject rows): legends, codebooks,
 lookup tables, tiny pilot tables.
 }
+\examples{
+df <- data.frame(id = sprintf("AB\%03d", 1:6), value = 1:6)
+path <- file.path(tempdir(), "passthrough_result.csv")
+utils::write.csv(df, path, row.names = FALSE, na = "")
+src <- read_source(path)
+spec <- infer_spec(src)
+res <- passthrough_result(src, spec, how = "blank", reason = "Tiny table")
+res$synthetic
+}

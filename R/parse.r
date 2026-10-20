@@ -5,6 +5,12 @@
 #'
 #' @param x Character vector.
 #' @return Numeric vector, `NA` where a cell is not a number.
+#' @examples
+#' x <- c("1.5", "2,75", " 3 ", "1e2", "unknown", NA)
+#' parsed <- parse_number_chr(x)
+#' parsed
+#' is.na(parsed)
+#' data.frame(raw = x, numeric = parsed)
 #' @export
 parse_number_chr <- function(x) {
   x <- trimws(x)
@@ -21,11 +27,17 @@ parse_number_chr <- function(x) {
 #'
 #' Recognises ISO `yyyy-mm-dd` (with optional time), `yyyy.mm.dd.`,
 #' `yyyy/mm/dd`, `dd.mm.yyyy` and, when `allow_serial = TRUE`, Excel date
-#' serials (numbers between 20000 and 60000, i.e. 1954 to 2064).
+#' serials (numbers between 3000 and 73000, i.e. 1908 to 2099).
 #'
 #' @param x Character vector.
 #' @param allow_serial Logical; treat plausible numbers as Excel serials.
 #' @return Numeric vector of days since 1970-01-01, `NA` if not a date.
+#' @examples
+#' x <- c("2020-01-15", "16.01.2020", "2020/01/17", "43848", NA)
+#' days <- parse_date_chr(x)
+#' as.Date(days, origin = "1970-01-01")
+#' days <- parse_date_chr(x, allow_serial = TRUE)
+#' as.Date(days, origin = "1970-01-01")
 #' @export
 parse_date_chr <- function(x, allow_serial = FALSE) {
   x <- trimws(x)

@@ -345,6 +345,19 @@ leaf_donors <- function(y, X, train, pred, minbucket = 5, cp = 1e-4) {
 #' @param key_fun Function normalising keys before matching (e.g. dropping a
 #'   hyphen so `AB-123` matches `AB123`).
 #' @return list(raw, roles), rows aligned to `src$raw` (first match per key).
+#' @examples
+#' df <- data.frame(id = sprintf("AB%03d", 1:60), value = 1:60)
+#' other <- data.frame(id = rev(df$id), code = rep(c(0, 1, NA), 20))
+#' path <- file.path(tempdir(), "make_aux_main.csv")
+#' aux_path <- file.path(tempdir(), "make_aux_other.csv")
+#' utils::write.csv(df, path, row.names = FALSE, na = "")
+#' utils::write.csv(other, aux_path, row.names = FALSE, na = "")
+#' src <- read_source(path)
+#' aux_src <- read_source(aux_path)
+#' aux_spec <- infer_spec(aux_src)
+#' aux <- make_aux(src, by = "id", aux_src = aux_src,
+#'                 aux_spec = aux_spec, aux_by = "id", cols = "code")
+#' head(aux$raw)
 #' @export
 make_aux <- function(src, by, aux_src, aux_spec, aux_by, cols = NULL,
                      key_fun = function(k) toupper(gsub("[^A-Za-z0-9]", "", k))) {
@@ -408,6 +421,14 @@ make_aux <- function(src, by, aux_src, aux_spec, aux_by, cols = NULL,
 #' @return A `synth_result`: `synthetic` (raw character data.frame in the
 #'   source layout), `spec`, `log`, `nonsubject` rows, `settings`, and the
 #'   source metadata needed to write it out.
+#' @examples
+#' df <- data.frame(id = sprintf("AB%03d", 1:60), value = 1:60,
+#'                  code = rep(c(0, 1, NA), 20), group = rep(c("A", "B"), 30))
+#' path <- file.path(tempdir(), "synthesize_table.csv")
+#' utils::write.csv(df, path, row.names = FALSE, na = "")
+#' src <- read_source(path)
+#' res <- synthesize_table(src, n_folds = 2, seed = 1, verbose = FALSE)
+#' head(res$synthetic)
 #' @export
 synthesize_table <- function(src, spec = NULL, n_folds = 10, n_cycles = 1,
                              censor_mode = c("cell", "row"),
@@ -419,7 +440,8 @@ synthesize_table <- function(src, spec = NULL, n_folds = 10, n_cycles = 1,
   stopifnot(inherits(src, "synth_source"), n_folds >= 2, n_cycles >= 1)
   nonsubject <- match.arg(nonsubject)
   censor_mode <- match.arg(censor_mode)
-  if (!is.null(seed)) set.seed(seed)
+  # Seeded runs must not leave the caller's random stream changed (CRAN policy)
+  if (!is.null(seed)) withr::local_seed(seed)
   if (is.null(spec)) spec <- infer_spec(src)
   validate_spec(spec, src)
   t0 <- Sys.time()
@@ -580,6 +602,14 @@ synthesize_table <- function(src, spec = NULL, n_folds = 10, n_cycles = 1,
 #'   output workbook).
 #' @param reason Recorded in `settings$passthrough`.
 #' @return A `synth_result` with `settings$passthrough` set.
+#' @examples
+#' df <- data.frame(id = sprintf("AB%03d", 1:6), value = 1:6)
+#' path <- file.path(tempdir(), "passthrough_result.csv")
+#' utils::write.csv(df, path, row.names = FALSE, na = "")
+#' src <- read_source(path)
+#' spec <- infer_spec(src)
+#' res <- passthrough_result(src, spec, how = "blank", reason = "Tiny table")
+#' res$synthetic
 #' @export
 passthrough_result <- function(src, spec, how = c("blank", "copy", "drop"),
                                reason = "") {
@@ -597,6 +627,10 @@ passthrough_result <- function(src, spec, how = c("blank", "copy", "drop"),
     delim = src$delim), class = "synth_result")
 }
 
+#' Print a synth_result
+#' @param x A `synth_result`.
+#' @param ... Ignored.
+#' @return `x`, invisibly.
 #' @export
 print.synth_result <- function(x, ...) {
   if (!is.null(x$settings$passthrough)) {

@@ -35,3 +35,11 @@ formats) is not read. CSV files are read with an auto-detected delimiter
 (comma, semicolon, tab or pipe) and encoding (Hungarian Excel exports are
 often semicolon-separated windows-1250).
 }
+\examples{
+df <- data.frame(id = sprintf("AB\%03d", 1:60), value = 1:60,
+                 code = rep(c(0, 1, NA), 20))
+path <- file.path(tempdir(), "read_source.csv")
+utils::write.csv(df, path, row.names = FALSE, na = "")
+src <- read_source(path)
+head(src$raw)
+}

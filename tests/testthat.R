@@ -7,6 +7,6 @@
 # * https://testthat.r-lib.org/articles/special-files.html
 
 library(testthat)
-library(SyntheticData)
+library(cellsynth)
 
-test_check("SyntheticData")
+test_check("cellsynth")

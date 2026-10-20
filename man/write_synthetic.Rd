@@ -23,3 +23,14 @@ Formulas, formatting and merged cells are not reproduced (values only).
 \code{.xls} sources are written as \code{.xlsx}. CSV output writes the raw strings
 with the original header and delimiter, in UTF-8.
 }
+\examples{
+df <- data.frame(id = sprintf("AB\%03d", 1:60), value = 1:60,
+                 code = rep(c(0, 1, NA), 20))
+path <- file.path(tempdir(), "write_synthetic_source.csv")
+utils::write.csv(df, path, row.names = FALSE, na = "")
+src <- read_source(path)
+res <- synthesize_table(src, n_folds = 2, seed = 1, verbose = FALSE)
+out_path <- file.path(tempdir(), "write_synthetic_output.csv")
+write_synthetic(res, out_path)
+file.exists(out_path)
+}

@@ -15,3 +15,10 @@ Numeric vector, \code{NA} where a cell is not a number.
 \description{
 Parse raw strings as numbers, tolerating decimal commas
 }
+\examples{
+x <- c("1.5", "2,75", " 3 ", "1e2", "unknown", NA)
+parsed <- parse_number_chr(x)
+parsed
+is.na(parsed)
+data.frame(raw = x, numeric = parsed)
+}

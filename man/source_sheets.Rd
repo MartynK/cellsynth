@@ -15,3 +15,10 @@ Character vector, in workbook order.
 \description{
 Sheet names of an Excel workbook
 }
+\examples{
+df <- data.frame(id = sprintf("AB\%03d", 1:6), value = 1:6)
+path <- file.path(tempdir(), "source_sheets.xlsx")
+sheets <- list(Subjects = df, Codes = data.frame(code = c(0, 1)))
+openxlsx::write.xlsx(sheets, path, overwrite = TRUE)
+source_sheets(path)
+}

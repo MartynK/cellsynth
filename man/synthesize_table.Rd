@@ -77,3 +77,12 @@ source metadata needed to write it out.
 \description{
 Synthesise one table
 }
+\examples{
+df <- data.frame(id = sprintf("AB\%03d", 1:60), value = 1:60,
+                 code = rep(c(0, 1, NA), 20), group = rep(c("A", "B"), 30))
+path <- file.path(tempdir(), "synthesize_table.csv")
+utils::write.csv(df, path, row.names = FALSE, na = "")
+src <- read_source(path)
+res <- synthesize_table(src, n_folds = 2, seed = 1, verbose = FALSE)
+head(res$synthetic)
+}

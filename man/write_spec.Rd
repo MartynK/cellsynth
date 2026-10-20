@@ -11,8 +11,20 @@ write_spec(spec, path)
 
 \item{path}{Output \code{.csv} path.}
 }
+\value{
+\code{path}, invisibly.
+}
 \description{
 Only the \code{role} column is meant to be edited by hand; the rest documents
 why the heuristics chose it. The file holds column names and counts only,
 no cell values.
+}
+\examples{
+df <- data.frame(id = sprintf("AB\%03d", 1:60), value = 1:60)
+path <- file.path(tempdir(), "write_spec_source.csv")
+utils::write.csv(df, path, row.names = FALSE, na = "")
+spec <- infer_spec(read_source(path))
+spec_path <- file.path(tempdir(), "write_spec.csv")
+write_spec(spec, spec_path)
+file.exists(spec_path)
 }
