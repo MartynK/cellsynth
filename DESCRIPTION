@@ -18,8 +18,8 @@ Description: Turns de-identified tables ('Excel' workbooks or delimited
     intended for developing and testing analysis code; they are not an
     anonymisation method.
 License: MIT + file LICENSE
-URL: https://github.com/MartynK/SyntheticData
-BugReports: https://github.com/MartynK/SyntheticData/issues
+URL: https://github.com/MartynK/cellsynth
+BugReports: https://github.com/MartynK/cellsynth/issues
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 Config/roxygen2/version: 8.1.1

@@ -9,7 +9,7 @@ machine.
 ## Quick start
 
 ```r
-# install.packages("remotes"); remotes::install_github("MartynK/SyntheticData")
+# install.packages("remotes"); remotes::install_github("MartynK/cellsynth")
 library(cellsynth)
 
 synthesize_file("path/to/table.xlsx", out_dir = "synthetic", m = 1)

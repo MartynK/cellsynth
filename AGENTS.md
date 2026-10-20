@@ -1,4 +1,4 @@
-# AGENTS.md: cellsynth (repo: SyntheticData)
+# AGENTS.md: cellsynth
 
 Package that turns de-identified tables into synthetic counterparts (same
 layout, real identifiers, redrawn values). Package root = repo root. R only.

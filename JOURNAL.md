@@ -1,4 +1,4 @@
-# JOURNAL: cellsynth (public; repo SyntheticData)
+# JOURNAL: cellsynth (public)
 
 Design decisions and rollbacks of the package. The client-specific journal
 (data, validation numbers) is kept outside the repository.
