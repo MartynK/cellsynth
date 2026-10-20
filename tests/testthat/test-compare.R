@@ -24,7 +24,8 @@ test_that("compare_tables returns one sane row per modelled column", {
 test_that("comparing a table with itself gives zero distance and full match", {
   ct <- compare_tables(src$raw, src$raw, spec, rows = rows)
   expect_true(all(ct$self_match == 1))
-  expect_true(all(ct$ks[ct$role %in% c("numeric", "date")] == 0))
+  # a sample against itself: KS distance zero up to floating point
+  expect_true(all(ct$ks[ct$role %in% c("numeric", "date")] < 1e-12))
   expect_true(all(ct$tvd[ct$role == "categorical"] == 0))
   expect_equal(ct$miss_orig, ct$miss_syn)
 })

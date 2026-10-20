@@ -102,6 +102,15 @@ predictors (`aux_always = TRUE`).
   (new submission; GitHub URLs 404 while the repository is private). PDF
   manual builds. CRAN-mode tests about 70 s.
 
+- R-hub v2 (linux, windows, macos-arm64, ubuntu-release, ubuntu-next):
+  Windows passed; the four others failed one test each. (1) openxlsx expands
+  "
+" to "
+" only on Windows, so the line-break compensation stripped
+  real "" on Linux/macOS; it is now decided by a one-off probe per session
+  (`openxlsx_expands_newlines()`). (2) A test compared a KS distance of a
+  sample with itself to exactly 0; now `< 1e-12`.
+
 ## Open problems / TODO
 
 - Sparse binary outcomes derived from many columns: derived outcome columns

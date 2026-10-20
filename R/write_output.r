@@ -1,5 +1,23 @@
 # Writing a synthetic table back in the layout of its source.
 
+# Does openxlsx turn "\n" into "\r\n" on this platform? It does on Windows
+# (text-mode file writes) and not on Linux or macOS, so probe once per
+# session with a one-cell workbook instead of guessing from the OS.
+.newline_cache <- new.env(parent = emptyenv())
+openxlsx_expands_newlines <- function() {
+  if (is.null(.newline_cache$expands)) {
+    p <- tempfile(fileext = ".xlsx")
+    on.exit(unlink(p), add = TRUE)
+    wb <- openxlsx::createWorkbook()
+    openxlsx::addWorksheet(wb, "s")
+    openxlsx::writeData(wb, "s", data.frame(x = "a\nb"), colNames = FALSE)
+    openxlsx::saveWorkbook(wb, p, overwrite = TRUE)
+    back <- readxl::read_excel(p, col_names = FALSE, col_types = "text")[[1]][1]
+    .newline_cache$expands <- identical(back, "a\r\nb")
+  }
+  .newline_cache$expands
+}
+
 # Restore one column to the cell type the source file had for it
 restore_type <- function(x, cls) {
   if (cls == "logical") {
@@ -7,9 +25,10 @@ restore_type <- function(x, cls) {
     if (all(is.na(x) | !is.na(v))) return(v)
   }
   if (all(is.na(x))) return(x)
-  # openxlsx writes every "\n" as "\r\n": collapse Excel's "\r\n" first so a
-  # cell's line breaks round-trip unchanged
-  x <- gsub("\r\n", "\n", x, fixed = TRUE)
+  # Where openxlsx writes every "\n" as "\r\n", collapse Excel's "\r\n"
+  # first so a cell's line breaks round-trip unchanged
+  if (any(grepl("\r\n", x, fixed = TRUE)) && openxlsx_expands_newlines())
+    x <- gsub("\r\n", "\n", x, fixed = TRUE)
   if (cls == "numeric") {
     v <- parse_number_chr(x)
     if (all(is.na(x) | !is.na(v))) return(v)
