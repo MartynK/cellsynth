@@ -6,6 +6,7 @@
 ^SyntheticData\.Rproj$
 ^\.Rproj\.user$
 ^\.claude$
+^\.github$
 ^\.positai$
 ^cran-comments\.md$
 ^inst/functions$
