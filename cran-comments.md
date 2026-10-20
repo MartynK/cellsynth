@@ -6,8 +6,10 @@
 
 ## Test environments
 
-* local Windows 11, R 4.6.0 (`R CMD check --as-cran`, manual built separately)
-* still to run before submission: win-builder (R-devel), R-hub (Linux, macOS)
+* local Windows 11, R 4.6.0 (`R CMD check --as-cran`, PDF manual built)
+* R-hub v2 (GitHub Actions): linux (R-devel), windows (R-devel),
+  macos-arm64 (R-devel), ubuntu-release, ubuntu-next: all Status OK
+* win-builder: R-devel and R-release (submitted 2026-10-20)
 
 ## Notes
 
