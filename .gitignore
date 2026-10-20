@@ -1,0 +1,28 @@
+# --- Proprietary data and client work: NEVER commit -----------------------------
+# Raw inputs (client data, de-identified but not ours to distribute)
+1_input_databases/
+# Synthetic outputs keep the real identifiers and permuted real free text,
+# so they are not anonymised either; they stay off git as well.
+2_synthetic/
+# Client-specific layer: run scripts, wrangling, reviewed specs, journal
+private/
+# Intermediate objects and validation outputs built from real data
+inst/sideffects/
+data/*.RData
+*.xlsx
+*.csv
+*.sas7bdat
+!tests/testthat/fixtures/*.csv
+# Profiler output
+*.out
+
+# --- Personal tooling ------------------------------------------------------------
+.claude/
+.positai
+
+# --- R / RStudio --------------------------------------------------------------
+.Rproj.user
+.Rhistory
+.RData
+.Ruserdata
+docs/
