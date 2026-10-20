@@ -107,9 +107,14 @@ predictors (`aux_always = TRUE`).
   "
 " to "
 " only on Windows, so the line-break compensation stripped
-  real "" on Linux/macOS; it is now decided by a one-off probe per session
+  real "
+" on Linux/macOS; it is now decided by a one-off probe per session
   (`openxlsx_expands_newlines()`). (2) A test compared a KS distance of a
   sample with itself to exactly 0; now `< 1e-12`.
+
+- 2026-10-20: submitted cellsynth 0.1.0 to CRAN (tarball built from
+  9a9598c, uploaded through the CRAN form); awaiting the maintainer's email
+  confirmation and CRAN review.
 
 ## Open problems / TODO
 

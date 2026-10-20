@@ -1,6 +1,7 @@
 ^1_input_databases$
 ^2_synthetic$
 ^AGENTS\.md$
+^CRAN-SUBMISSION$
 ^JOURNAL\.md$
 ^LICENSE\.md$
 ^SyntheticData\.Rproj$
